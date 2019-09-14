@@ -107,4 +107,18 @@ while (rodada <= quantidadePeguntas):
         #Incrementa o valor da rodada
         rodada += 1
 
+#Informa a pontuacao alcancada nessa rodada
+print()
 print("Pontuacao:", pontos)
+print()
+
+db_high_score = firebase.database()
+
+high_score = db_high_score.child("Highscore").get().val()
+
+if(pontos > high_score):
+    print("Novo recorde! Parabens!")
+
+else:
+    print("Que tal tentar mais uma vez? Talvez voce consiga quebrar o recorde atual!")
+    print("Recorde atual:", high_score)
