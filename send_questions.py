@@ -18,6 +18,27 @@ db_quantidade_perguntas = firebase.database()
 quantidade_perguntas = db_quantidade_perguntas.child("Quantidade").get().val()
 
 print("Bem Vindo! Utilize esse programa para adicionar perguntas ao jogo!")
-print(quantidade_perguntas)
+
+parar = ""
+
+while(parar != "parar"):
+    print("Para cancelar a operacao, digite parar")
+    print("Para continuar, digite qualquer outra coisa")    
+    print()
+
+    parar = input()
+    print()
+    
+    if(parar != "parar"):
+        print("Ok! Antes de comecar a adicionar uma pergunta, leia as regras atentamente!")
+        print("\nRegras:")
+        print("1 - Voce ira primeiro inserir uma pergunta")
+        print("2 - Apos isso, voce devera informar 4 possiveis respostas")
+        print("3 - Das respostas, somente 1 podera ser a resposta correta")
+        print("4 - Caso voce informe mais de 1 resposta correta, o programa ira reiniciar")
+        print()
+        print("Ok, agora iremos comecar entao!\n")
+
+
 
 
