@@ -1,3 +1,1 @@
-import pyrebase
-import random
-
+game.start_game()

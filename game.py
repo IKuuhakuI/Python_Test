@@ -1,3 +1,6 @@
+import pyrebase
+import random
+
 def start_game ():
     # Configuracoes importantes para linkar ao projeto do Firebase
     config = {
