@@ -87,6 +87,23 @@ while(parar != "parar"):
             lista_isCorrect[indice_resposta] = isCorrect
 
             indice_resposta += 1
+        
+        letra_resposta = ["a" , "b" , "c" , "d"]
+
+        db_resposta_a = firebase.database()
+        resposta_a = db_resposta_a.child("Respostas")  
+
+        nova_resposta = {
+            str(quantidade_perguntas+1):{
+                letra_resposta[0]:{
+                    "isCorrect":lista_isCorrect[0],
+                    "valor":str(lista_respostas[0])   
+                }
+            }
+        }
+
+        resposta_a.update(nova_resposta)
+            
 
         # Faz a conexao com o db para poder enviar a pergunta
         db_pergunta = firebase.database()
