@@ -17,23 +17,47 @@ firebase = pyrebase.initialize_app(config)
 
 #Faz a conexao com o banco de dados externo
 db = firebase.database()
+db_perg = firebase.database()
+db_resp = firebase.database()
 
 #Quantas perguntas tem no jogo
 quantidadePeguntas = db.child("Quantidade").get().val()
-print(quantidadePeguntas)
 
 #Lista que diz quais perguntas ja foram
 perguntas_antigas = [0] * quantidadePeguntas
 
+#Contador para as rodadas
 rodada = 1
 
-while(rodada <= quantidadePeguntas):
-    perguntaAtual = random.randrange(1, quantidadePeguntas + 1)
-    if(perguntas_antigas[perguntaAtual - 1] == 1):
-        continue
-    else:
-        print(perguntaAtual ,perguntas_antigas[perguntaAtual - 1])
-        perguntas_antigas[perguntaAtual - 1] = 1
-        rodada += 1
+#Referencia ao branch das Perguntas no banco de dados
+branchPerguntas = db_perg.child("Perguntas")
+branchRespostas = db_resp.child("Respostas")
 
-#print(quantidadePeguntas)
+#Variavel que guarda a quantidade de perguntas acertadas
+pontos = 0
+
+#Contador de perguntas
+while (rodada <= quantidadePeguntas):
+    #Gera um numero aleatorio para definir a pergunta atual
+    indicePerguntaAtual = random.randrange(1, quantidadePeguntas + 1)
+    
+    #Caso a pergunta seja repetida 
+    if(perguntas_antigas[indicePerguntaAtual - 1] == 1):
+        continue
+
+    #Jogo    
+    else:
+        #Variavel com a pergunta
+        perguntaAtual = branchPerguntas.child(indicePerguntaAtual).child("Pergunta").get().val()
+
+        print("Pergunta ", rodada, ": ", perguntaAtual, " ?", sep='')
+        
+        #Opcao a
+        respostaAtual = branchRespostas.child(indicePerguntaAtual).child("a").child("valor").get().val()
+        print(respostaAtual)
+
+        #Adiciona a pergunta atual a lista de perguntas antigas
+        perguntas_antigas[indicePerguntaAtual - 1] = 1
+        
+        #Incrementa o valor da rodada
+        rodada += 1
