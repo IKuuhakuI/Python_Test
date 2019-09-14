@@ -81,30 +81,47 @@ while(parar != "parar"):
             # Indica que uma resposta verdadeira foi informada
             elif(isCorrect == 1):
                 onlyOneTrue = 1
+                lista_isCorrect[indice_resposta] = True
                 print("Only one true")
-
+            
+            #Caso resposta seja falsa
+            else:
+                lista_isCorrect[indice_resposta] = False 
+            
+            #Escreve a resposta na lista das respostas
             lista_respostas[indice_resposta] = resposta_atual
-            lista_isCorrect[indice_resposta] = isCorrect
+            
 
             indice_resposta += 1
         
         letra_resposta = ["a" , "b" , "c" , "d"]
 
-        db_resposta_a = firebase.database()
-        resposta_a = db_resposta_a.child("Respostas")  
+        #Escreve todas as respostas no db
+        db_resposta = firebase.database()
+        resposta = db_resposta.child("Respostas")  
 
         nova_resposta = {
             str(quantidade_perguntas+1):{
                 letra_resposta[0]:{
                     "isCorrect":lista_isCorrect[0],
                     "valor":str(lista_respostas[0])   
+                },
+                letra_resposta[1]:{
+                    "isCorrect":lista_isCorrect[1],
+                    "valor":str(lista_respostas[1])   
+                },
+                letra_resposta[2]:{
+                    "isCorrect":lista_isCorrect[2],
+                    "valor":str(lista_respostas[2])   
+                },
+                letra_resposta[3]:{
+                    "isCorrect":lista_isCorrect[3],
+                    "valor":str(lista_respostas[3])   
                 }
             }
         }
-
-        resposta_a.update(nova_resposta)
-            
-
+        resposta.update(nova_resposta)
+        
         # Faz a conexao com o db para poder enviar a pergunta
         db_pergunta = firebase.database()
         pergunta = db_pergunta.child("Perguntas")
