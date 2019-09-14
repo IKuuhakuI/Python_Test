@@ -8,9 +8,17 @@ config = {
     "storageBucket": "",
     "messagingSenderId": "581051665954",
     "appId": "1:581051665954:web:6f131448200a100689447b"
-  }
+}
 
-  firebase = pyrebase.initialize_app(config)
+firebase = pyrebase.initialize_app(config)
 
-  dados = firebase.database()
-  dados.child().update({"bola" : "teste"})
+db = firebase.database()
+
+dados = db.get()
+
+num = 0
+
+for dado in dados.each():
+    num += 1
+
+print(num)
