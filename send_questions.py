@@ -13,10 +13,6 @@ config = {
 
 firebase = pyrebase.initialize_app(config)
 
-# Faz conexao com o banco de dados para puxar a quantidade de perguntas
-db_quantidade_perguntas = firebase.database()
-quantidade_perguntas = db_quantidade_perguntas.child("Quantidade").get().val()
-
 print("Bem Vindo! Utilize esse programa para adicionar perguntas ao jogo!")
 
 parar = ""
@@ -30,6 +26,10 @@ while(parar != "parar"):
     print()
     
     if(parar != "parar"):
+        # Faz conexao com o banco de dados para puxar a quantidade de perguntas
+        db_quantidade_perguntas = firebase.database()
+        quantidade_perguntas = db_quantidade_perguntas.child("Quantidade").get().val()
+        
         print("Ok! Antes de comecar a adicionar uma pergunta, leia as regras atentamente!")
         print()
         
@@ -57,6 +57,10 @@ while(parar != "parar"):
         }
 
         pergunta.update(nova_pergunta)
+
+        db_update_quantidade_perguntas = firebase.database()
+
+        db_update_quantidade_perguntas.update({"Quantidade":(quantidade_perguntas+1)})
 
 
 
