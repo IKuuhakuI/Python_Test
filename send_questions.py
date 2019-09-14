@@ -92,23 +92,23 @@ def send():
                     onlyOneTrue = 1
                     lista_isCorrect[indice_resposta] = True
             
-                #Caso resposta seja falsa
+                # Caso resposta seja falsa
                 else:
                     lista_isCorrect[indice_resposta] = False 
             
-                #Escreve a resposta na lista das respostas
+                # Escreve a resposta na lista das respostas
                 lista_respostas[indice_resposta] = resposta_atual
             
-                #Mensagem de sucesso ao gravar a resposta
+                # Mensagem de sucesso ao gravar a resposta
                 print("Resposta numero", indice_resposta + 1,"gravada!")
                 print()
 
                 indice_resposta += 1
         
-            #Lista com a ordem das letras das respostas
+            # Lista com a ordem das letras das respostas
             letra_resposta = ["a" , "b" , "c" , "d"]
 
-            #Faz a conexao com o db para poder guardar as respostas
+            # Faz a conexao com o db para poder guardar as respostas
             db_resposta = firebase.database()
             resposta = db_resposta.child("Respostas")  
 
