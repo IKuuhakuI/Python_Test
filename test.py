@@ -11,3 +11,6 @@ config = {
   }
 
   firebase = pyrebase.initialize_app(config)
+
+  dados = firebase.database()
+  dados.child().update({"bola" : "teste"})
