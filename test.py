@@ -18,16 +18,93 @@ firebase = pyrebase.initialize_app(config)
 #Faz a conexao com o banco de dados externo
 db = firebase.database()
 
-#Variavel que recebe todos os dados do no principal
-dados = db.get()
+#Quantas perguntas tem no jogo
+quantidadePeguntas = db.child("Quantidade").get().val()
 
-#Conta quantas perguntas existem no banco de dados
-quantidadePeguntas = 0
+#Lista que diz quais perguntas ja foram
+perguntas_antigas = [0] * quantidadePeguntas
 
-#Para cada pergunta, incrementa o valor em 1
-for perguntas in dados.each():
-    quantidadePeguntas += 1
+#Contador para as rodadas
+rodada = 1
 
-perguntaAtual = random.randrange(1, quantidadePeguntas+1)
+#Variavel que guarda a quantidade de perguntas acertadas
+pontos = 0
 
-print(perguntaAtual)
+#Contador de perguntas
+while (rodada <= quantidadePeguntas):
+    #Gera um numero aleatorio para definir a pergunta atual
+    indicePerguntaAtual = random.randrange(1, quantidadePeguntas + 1)
+    
+    #Caso a pergunta seja repetida 
+    if(perguntas_antigas[indicePerguntaAtual - 1] == 1):
+        continue
+
+    #Jogo    
+    else:
+        #Conexao com o banco de dados para puxar as perguntas
+        db_perg = firebase.database()
+        branchPerguntas = db_perg.child("Perguntas")
+
+        #Variavel com a pergunta
+        perguntaAtual = branchPerguntas.child(indicePerguntaAtual).child("Pergunta").get().val()
+        
+        #Informa a pergunta
+        print("Pergunta ", rodada, ": ", perguntaAtual, " ?", sep='')
+        
+        #loop para evitar bug de valor nulo
+        for n in range(4):
+            #Conexao com o banco de dados para puxar as respostas
+            db_resp = firebase.database()
+            branchRespostas = db_resp.child("Respostas")
+
+            #Condicionais que colocam as opcoes em ordem
+            if(n == 0):
+                #Opcao a
+                respostaAtual = branchRespostas.child(indicePerguntaAtual).child("a").child("valor").get().val()
+                print("\ta) ", respostaAtual)
+
+            elif(n == 1):
+                #Opcao b
+                respostaAtual = branchRespostas.child(indicePerguntaAtual).child("b").child("valor").get().val()
+                print("\tb) ", respostaAtual)
+
+            elif(n == 2):
+                #Opcao c
+                respostaAtual = branchRespostas.child(indicePerguntaAtual).child("c").child("valor").get().val()
+                print("\tc) ", respostaAtual)
+
+            else:
+                #Opcao d
+                respostaAtual = branchRespostas.child(indicePerguntaAtual).child("d").child("valor").get().val()
+                print("\td) ", respostaAtual)
+        
+        #Teste para aceitar somente entradas validas
+        while(True):
+            respostaInformada = input("Insira a sua resposta: ")
+            if(respostaInformada != "a" and respostaInformada != "b" and respostaInformada != "c" and respostaInformada != "d"):
+                print("Entrada invalida! Por favor responda com a ou b ou c ou d")
+            else:
+                break
+
+        db_verifica = firebase.database()
+
+        isCorrect = db_verifica.child("Respostas").child(indicePerguntaAtual).child(respostaInformada).child("isCorrect").get().val()
+
+        #Quebra de linha
+        print()
+
+        if(isCorrect == True):
+            pontos += 1
+            print("Resposta Correta!!\n")
+
+        elif(isCorrect == False):
+            print("Resposta Errada!! Fim de Jogo :(")
+            break
+
+        #Adiciona a pergunta atual a lista de perguntas antigas
+        perguntas_antigas[indicePerguntaAtual - 1] = 1
+        
+        #Incrementa o valor da rodada
+        rodada += 1
+
+print("Pontuacao:", pontos)
