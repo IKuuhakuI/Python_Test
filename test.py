@@ -18,16 +18,22 @@ firebase = pyrebase.initialize_app(config)
 #Faz a conexao com o banco de dados externo
 db = firebase.database()
 
-#Variavel que recebe todos os dados do no principal
-dados = db.get()
+#Quantas perguntas tem no jogo
+quantidadePeguntas = db.child("Quantidade").get().val()
+print(quantidadePeguntas)
 
-#Conta quantas perguntas existem no banco de dados
-quantidadePeguntas = 0
+#Lista que diz quais perguntas ja foram
+perguntas_antigas = [0] * quantidadePeguntas
 
-#Para cada pergunta, incrementa o valor em 1
-for perguntas in dados.each():
-    quantidadePeguntas += 1
+rodada = 1
 
-perguntaAtual = random.randrange(1, quantidadePeguntas+1)
+while(rodada <= quantidadePeguntas):
+    perguntaAtual = random.randrange(1, quantidadePeguntas + 1)
+    if(perguntas_antigas[perguntaAtual - 1] == 1):
+        continue
+    else:
+        print(perguntaAtual ,perguntas_antigas[perguntaAtual - 1])
+        perguntas_antigas[perguntaAtual - 1] = 1
+        rodada += 1
 
-print(perguntaAtual)
+#print(quantidadePeguntas)
