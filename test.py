@@ -1,7 +1,8 @@
+# Bibliotecas
 import pyrebase
 import random
 
-#Configuracoes importantes para linkar ao projeto do Firebase
+# Configuracoes importantes para linkar ao projeto do Firebase
 config = {
     "apiKey": "AIzaSyBrarBhWJSP3FnNJurEAtrbmUb1fG_wZFs",
     "authDomain": "teste-python-67d43.firebaseapp.com",
@@ -12,73 +13,73 @@ config = {
     "appId": "1:581051665954:web:6f131448200a100689447b"
 }
 
-#Faz conexao com Firebase
+# Faz conexao com Firebase
 firebase = pyrebase.initialize_app(config)
 
-#Faz a conexao com o banco de dados externo
+# Faz a conexao com o banco de dados externo
 db = firebase.database()
 
-#Quantas perguntas tem no jogo
+# Quantas perguntas tem no jogo
 quantidadePeguntas = db.child("Quantidade").get().val()
 
-#Lista que diz quais perguntas ja foram
+# Lista que diz quais perguntas ja foram
 perguntas_antigas = [0] * quantidadePeguntas
 
-#Contador para as rodadas
+# Contador para as rodadas
 rodada = 1
 
-#Variavel que guarda a quantidade de perguntas acertadas
+# Variavel que guarda a quantidade de perguntas acertadas
 pontos = 0
 
-#Contador de perguntas
+# Contador de perguntas
 while (rodada <= quantidadePeguntas):
-    #Gera um numero aleatorio para definir a pergunta atual
+    # Gera um numero aleatorio para definir a pergunta atual
     indicePerguntaAtual = random.randrange(1, quantidadePeguntas + 1)
     
-    #Caso a pergunta seja repetida 
+    # Caso a pergunta seja repetida 
     if(perguntas_antigas[indicePerguntaAtual - 1] == 1):
         continue
 
-    #Jogo    
+    # Jogo    
     else:
-        #Conexao com o banco de dados para puxar as perguntas
+        # Conexao com o banco de dados para puxar as perguntas
         db_perg = firebase.database()
         branchPerguntas = db_perg.child("Perguntas")
 
-        #Variavel com a pergunta
+        # Variavel com a pergunta
         perguntaAtual = branchPerguntas.child(indicePerguntaAtual).child("Pergunta").get().val()
         
-        #Informa a pergunta
+        # Informa a pergunta
         print("Pergunta ", rodada, ": ", perguntaAtual, " ?", sep='')
         
-        #loop para evitar bug de valor nulo
+        # Loop para evitar bug de valor nulo
         for n in range(4):
-            #Conexao com o banco de dados para puxar as respostas
+            # Conexao com o banco de dados para puxar as respostas
             db_resp = firebase.database()
             branchRespostas = db_resp.child("Respostas")
 
-            #Condicionais que colocam as opcoes em ordem
+            # Condicionais que colocam as opcoes em ordem
             if(n == 0):
-                #Opcao a
+                # Opcao a
                 respostaAtual = branchRespostas.child(indicePerguntaAtual).child("a").child("valor").get().val()
                 print("\ta) ", respostaAtual)
 
             elif(n == 1):
-                #Opcao b
+                # Opcao b
                 respostaAtual = branchRespostas.child(indicePerguntaAtual).child("b").child("valor").get().val()
                 print("\tb) ", respostaAtual)
 
             elif(n == 2):
-                #Opcao c
+                # Opcao c
                 respostaAtual = branchRespostas.child(indicePerguntaAtual).child("c").child("valor").get().val()
                 print("\tc) ", respostaAtual)
 
             else:
-                #Opcao d
+                # Opcao d
                 respostaAtual = branchRespostas.child(indicePerguntaAtual).child("d").child("valor").get().val()
                 print("\td) ", respostaAtual)
         
-        #Teste para aceitar somente entradas validas
+        # Teste para aceitar somente entradas validas
         while(True):
             respostaInformada = input("Insira a sua resposta: ")
             if(respostaInformada != "a" and respostaInformada != "b" and respostaInformada != "c" and respostaInformada != "d"):
@@ -86,39 +87,41 @@ while (rodada <= quantidadePeguntas):
             else:
                 break
 
+        # Faz a conexao com o banco de dados para puxar o isCorrect
         db_verifica = firebase.database()
-
         isCorrect = db_verifica.child("Respostas").child(indicePerguntaAtual).child(respostaInformada).child("isCorrect").get().val()
 
-        #Quebra de linha
+        # Quebra de linha
         print()
 
+        # Verifica se a resposta foi correta ou nao 
         if(isCorrect == True):
             pontos += 1
             print("Resposta Correta!!\n")
-
         elif(isCorrect == False):
             print("Resposta Errada!! Fim de Jogo :(")
             break
 
-        #Adiciona a pergunta atual a lista de perguntas antigas
+        # Adiciona a pergunta atual a lista de perguntas antigas
         perguntas_antigas[indicePerguntaAtual - 1] = 1
         
-        #Incrementa o valor da rodada
+        # Incrementa o valor da rodada
         rodada += 1
 
-#Informa a pontuacao alcancada nessa rodada
+# Informa a pontuacao alcancada nessa rodada
 print()
 print("Pontuacao:", pontos)
 print()
 
+# Faz a conexao com o banco de dados para puxar o High Score
 db_high_score = firebase.database()
-
 high_score = db_high_score.child("Highscore").get().val()
 
+# Compara a pontuacao atual com a pontuacao maxima
 if(pontos > high_score):
     print("Novo recorde! Parabens!")
-
+    db_high_score.update({"Highscore" : pontos})
 else:
     print("Que tal tentar mais uma vez? Talvez voce consiga quebrar o recorde atual!")
     print("Recorde atual:", high_score)
+    
