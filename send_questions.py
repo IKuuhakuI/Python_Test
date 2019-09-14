@@ -14,6 +14,7 @@ config = {
 firebase = pyrebase.initialize_app(config)
 
 print("Bem Vindo! Utilize esse programa para adicionar perguntas ao jogo!")
+print()
 
 parar = ""
 
@@ -38,7 +39,7 @@ while(parar != "parar"):
         print("1 - Voce ira primeiro inserir uma pergunta")
         print("2 - Apos isso, voce devera informar 4 possiveis respostas")
         print("3 - Das respostas, somente 1 podera ser a resposta correta")
-        print("4 - Caso voce informe mais de 1 resposta correta, o programa ira reiniciar")
+        print("4 - Caso voce informe mais de 1 resposta correta, o programa ira recusar")
         print()
         
         print("Ok, agora iremos comecar entao!")
@@ -46,6 +47,7 @@ while(parar != "parar"):
 
         # Pede para o usuario informar a pergunta
         pergunta_informada = input("Informe aqui a pergunta: ")
+        print()
 
         # Cria uma lista com 4 posicoes para guardar as respostas
         lista_respostas = [""] * 4
@@ -61,28 +63,33 @@ while(parar != "parar"):
             # Pede uma resposta para a pergunta informada e pergunta se ela e verdadeira ou falsa
             print("Insira a resposta numero", indice_resposta + 1,": ", end=(''))
             resposta_atual = input()
-            isCorrect = int(input("Digite 0 caso a resposta seja falsa e 1 caso seja verdadeira: "))
             
+            #Pede para informar se a resposta e verdadeira ou falsa
+            isCorrect = int(input("Digite 0 caso a resposta seja falsa e 1 caso seja verdadeira: "))
+            print()
+
             # Verifica se a entrada e valida
             if(isCorrect != 0 and isCorrect != 1):
                 print("Insira somente 0 ou 1")
+                print()
                 continue
 
             # Verifica se existe somente uma resposta correta
             elif(isCorrect == 1 and onlyOneTrue > 0):
                 print("Somente uma resposta pode ser verdadeira!")
+                print()
                 continue
             
             # Verifica se existe uma e somente uma resposta verdadeira
             elif(indice_resposta == 3 and isCorrect == 0 and onlyOneTrue == 0):
                 print("E necessario ter 1 resposta verdadeira!")
+                print()
                 continue
             
             # Indica que uma resposta verdadeira foi informada
             elif(isCorrect == 1):
                 onlyOneTrue = 1
                 lista_isCorrect[indice_resposta] = True
-                print("Only one true")
             
             #Caso resposta seja falsa
             else:
@@ -91,15 +98,20 @@ while(parar != "parar"):
             #Escreve a resposta na lista das respostas
             lista_respostas[indice_resposta] = resposta_atual
             
+            #Mensagem de sucesso ao gravar a resposta
+            print("Resposta numero", indice_resposta + 1,"gravada!")
+            print()
 
             indice_resposta += 1
         
+        #Lista com a ordem das letras das respostas
         letra_resposta = ["a" , "b" , "c" , "d"]
 
-        #Escreve todas as respostas no db
+        #Faz a conexao com o db para poder guardar as respostas
         db_resposta = firebase.database()
         resposta = db_resposta.child("Respostas")  
 
+        #Escreve todas as respostas no db
         nova_resposta = {
             str(quantidade_perguntas+1):{
                 letra_resposta[0]:{
@@ -126,7 +138,7 @@ while(parar != "parar"):
         db_pergunta = firebase.database()
         pergunta = db_pergunta.child("Perguntas")
         
-        # Adiciona a pergunta no branch da Perguntas
+        # Adiciona a pergunta no branch das Perguntas
         nova_pergunta = {
             str(quantidade_perguntas + 1):{
                 "Pergunta":pergunta_informada
@@ -140,6 +152,8 @@ while(parar != "parar"):
         db_update_quantidade_perguntas = firebase.database()
         db_update_quantidade_perguntas.update({"Quantidade":(quantidade_perguntas+1)})
 
+        print("Ok! Sua pergunta ja esta disponivel no jogo!")
+        print()
 
 
 
