@@ -44,23 +44,68 @@ while(parar != "parar"):
         print("Ok, agora iremos comecar entao!")
         print()
 
+        # Pede para o usuario informar a pergunta
         pergunta_informada = input("Informe aqui a pergunta: ")
+
+        # Cria uma lista com 4 posicoes para guardar as respostas
+        lista_respostas = [""] * 4
+        lista_isCorrect = [0] * 4
+
+        # Pede para o usuario informar as respostas
+        indice_resposta = 0
+        
+        # Verifica se existe uma e somente uma resposta verdadeira
+        onlyOneTrue = 0
+
+        while indice_resposta < 4:
+            # Pede uma resposta para a pergunta informada e pergunta se ela e verdadeira ou falsa
+            print("Insira a resposta numero", indice_resposta + 1,": ", end=(''))
+            resposta_atual = input()
+            isCorrect = int(input("Digite 0 caso a resposta seja falsa e 1 caso seja verdadeira: "))
+            
+            # Verifica se a entrada e valida
+            if(isCorrect != 0 and isCorrect != 1):
+                print("Insira somente 0 ou 1")
+                continue
+
+            # Verifica se existe somente uma resposta correta
+            elif(isCorrect == 1 and onlyOneTrue > 0):
+                print("Somente uma resposta pode ser verdadeira!")
+                continue
+            
+            # Verifica se existe uma e somente uma resposta verdadeira
+            elif(indice_resposta == 3 and isCorrect == 0 and onlyOneTrue == 0):
+                print("E necessario ter 1 resposta verdadeira!")
+                continue
+            
+            # Indica que uma resposta verdadeira foi informada
+            elif(isCorrect == 1):
+                onlyOneTrue = 1
+                print("Only one true")
+
+            lista_respostas[indice_resposta] = resposta_atual
+            lista_isCorrect[indice_resposta] = isCorrect
+
+            indice_resposta += 1
 
         # Faz a conexao com o db para poder enviar a pergunta
         db_pergunta = firebase.database()
         pergunta = db_pergunta.child("Perguntas")
         
+        # Adiciona a pergunta no branch da Perguntas
         nova_pergunta = {
             str(quantidade_perguntas + 1):{
                 "Pergunta":pergunta_informada
             }
         }
 
+        # Atualiza o branch das Perguntas
         pergunta.update(nova_pergunta)
 
+        # Faz a conexao com db para atualizar o valor da quantidade de perguntas
         db_update_quantidade_perguntas = firebase.database()
-
         db_update_quantidade_perguntas.update({"Quantidade":(quantidade_perguntas+1)})
+
 
 
 
